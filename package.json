@@ -1,0 +1,32 @@
+{
+  "name": "koop-exporter",
+  "version": "1.0.0",
+  "description": "Handles exporting for koop",
+  "main": "index.js",
+  "dependencies": {
+    "babel-eslint": "^4.1.5",
+    "koop": "^2.11.0",
+    "koop-pgcache": "^1.5.1",
+    "standard": "^5.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "standard && tape test/*.js | tap-spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koopjs/koop-exporter.git"
+  },
+  "keywords": [
+    "koop",
+    "gis",
+    "geojson",
+    "shapefile"
+  ],
+  "author": "Daniel Fenton <dfenton@esri.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/koopjs/koop-exporter/issues"
+  },
+  "homepage": "https://github.com/koopjs/koop-exporter#readme"
+}
