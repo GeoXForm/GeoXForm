@@ -17,7 +17,7 @@ test('before', function (t) {
 })
 
 test('write a vrt', function (t) {
-  t.plan(4)
+  t.plan(6)
   const fixture = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
   const stream = _(fixture).pipe(JsonStream.parse('features.*')).pipe(_()).map(JSON.stringify)
   Vrt.write(stream, output, {size: 33})
@@ -26,7 +26,10 @@ test('write a vrt', function (t) {
   })
   .done(function () {
     try {
-      [1, 2, 3, 4].forEach((n) => t.ok(fs.statSync(`${output}/part.${n}.json`), `JSON part ${n} of 4 exists`))
+      [1, 2, 3, 4].forEach((n) => t.ok(fs.statSync(`${output}/part.${n}.json`), `JSON part ${n} of 4 written`))
+      const vrtPath = `${output}/layer.vrt`
+      t.ok(fs.statSync(vrtPath), 'VRT written')
+      t.equal(fs.readFileSync(vrtPath).toString().length > 0, true, 'VRT has content')
     } catch (e) {
       t.fail(e)
     }
