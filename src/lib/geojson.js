@@ -3,17 +3,22 @@ var files = require('koop').files
 
 function geojson (cache, table, options) {
   const featureStream = cache.createExportStream(table, options)
-  const writeStream = files.createWriteStream(options.path)
-
+  const uploadStream = files.createWriteStream(options.path)
+  return write(featureStream, uploadStream)
 }
 
-function writeGeoJson (in, out) {
-  return  _([start])
-  .concat(in)
+function write (input, output) {
+  const start = '{"type":"FeatureCollection","features":["'
+  const end = ']}'
+
+  return _([start])
+  .concat(input)
   .intersperse(',')
   .append(end)
-  .pipe(out)
+  .pipe(output)
 }
 
-const start = '"{"type":"FeatureCollection","features":["'
-const end = ']}'
+module.exports = {
+  geojson: geojson,
+  write: write
+}
