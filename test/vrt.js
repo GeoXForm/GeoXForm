@@ -7,7 +7,7 @@ const JsonStream = require('jsonstream')
 
 const output = `${__dirname}/output`
 
-test('before', function (t) {
+test('before', t => {
   try {
     fs.mkdirSync(output)
   } catch (e) {
@@ -16,23 +16,20 @@ test('before', function (t) {
   t.end()
 })
 
-test('write a vrt', function (t) {
+test('write a vrt', t => {
   t.plan(6)
   const fixture = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
   const stream = _(fixture).pipe(JsonStream.parse('features.*')).pipe(_()).map(JSON.stringify)
-  Vrt.write(stream, output, {size: 33})
-  .errors(function (error) {
-    t.fail(error)
-  })
-  .done(function () {
-    try {
-      [1, 2, 3, 4].forEach((n) => t.ok(fs.statSync(`${output}/part.${n}.json`), `JSON part ${n} of 4 written`))
-      const vrtPath = `${output}/layer.vrt`
-      t.ok(fs.statSync(vrtPath), 'VRT written')
-      t.equal(fs.readFileSync(vrtPath).toString().length > 0, true, 'VRT has content')
-    } catch (e) {
-      t.fail(e)
-    }
+
+  Vrt.write(stream, { path: output, size: 33 }, err => {
+    if (err) { return t.fail(err) }
+    [1, 2, 3, 4].forEach(n => {
+      const fileLength = fs.readFileSync(`${output}/part.${n}.json`).toString().length
+      t.equal(fileLength > 0, true, `JSON part ${n} of 4 written`)
+    })
+    const vrtPath = `${output}/layer.vrt`
+    t.ok(fs.statSync(vrtPath), 'VRT written')
+    t.equal(fs.readFileSync(vrtPath).toString().length > 0, true, 'VRT has content')
   })
 })
 

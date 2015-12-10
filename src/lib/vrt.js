@@ -3,41 +3,46 @@ const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
 
-function write (stream, path, options) {
-  let n = 0
-  const returned = _()
+function write (stream, options, callback) {
+  let partsCount = 0
   const size = options.size || 5000
-  const vrtStream = createVrtStream(path)
-
-  stream.batch(size).tap(function (batch) {
-    n++
-    addVrtPart(batch, n, path, vrtStream)
+  const vrtStream = createVrtStream(options.path)
+  const partStream = _()
+  stream.batch(size).tap(batch => {
+    partsCount++
+    addVrtPart(batch, partsCount, options.path, vrtStream).pipe(partStream)
   })
   .errors((err) => {
-    stream.destroy()
-    returned.emit('error', err)
+    callback(err)
   })
   .done(() => {
-    endVrtSteam(vrtStream)
-    returned.end()
+    // we need a way to know if all the sub-streams have finished
+    // there's got. to. be. a better way to do this
+    partStream.each((partsWritten) => {
+      if (partsWritten === partsCount) {
+        endVrtSteam(vrtStream)
+        callback(null)
+      }
+    })
   })
-
-  return returned
 }
 
-function addVrtPart (batch, n, path, stream) {
-  const fileName = `${path}/part.${n}.json`
+function addVrtPart (batch, index, path, stream) {
+  const fileName = `${path}/part.${index}.json`
   addMetadata(stream, fileName)
-  writeJsonPart(batch, fileName)
+  return writeJsonPart(batch, fileName, index)
 }
 
 function addMetadata (stream, fileName) {
   stream.write(`<OGRVRTLayer name="OGRGeoJSON"><SrcDataSource>${fileName}</SrcDataSource></OGRVRTLayer>`)
 }
 
-function writeJsonPart (batch, fileName) {
-  const fileStream = _(fs.createWriteStream(fileName))
-  return Geojson.write(_(batch), fileStream)
+function writeJsonPart (batch, fileName, index) {
+  const outStream = _()
+  const fileStream = fs.createWriteStream(fileName)
+  Geojson.write(_(batch), fileStream)
+  .on('finish', () => { outStream.write(index) })
+  return outStream
 }
 
 function createVrtStream (path) {

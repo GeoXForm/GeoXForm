@@ -6,13 +6,17 @@
   "dependencies": {
     "JSONStream": "^1.0.7",
     "babel-eslint": "^4.1.5",
+    "format-spatial-ref": "^1.0.0",
     "koop": "^2.11.0",
     "koop-pgcache": "^1.5.1",
+    "sanitize-filename": "^1.5.3",
     "standard": "^5.4.0"
   },
   "devDependencies": {
+    "adm-zip": "^0.4.7",
     "babel-preset-es2015": "^6.3.13",
     "babel-tape-runner": "^1.3.0",
+    "nock": "^3.4.0",
     "recast": "^0.10.39",
     "rimraf": "^2.4.4",
     "tap-spec": "^4.1.1",
