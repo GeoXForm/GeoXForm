@@ -1,23 +1,13 @@
+/* global __dirname */
 // const _ = require('highland')
 const AdmZip = require('adm-zip')
 const fs = require('fs')
 const test = require('tape')
 const Shapefile = require('../src/lib/shapefile.js')
-const rimraf = require('rimraf')
+const Helper = require('./helper')
 
-const outputDir = `${__dirname}/output`
-const testVrt = `${__dirname}/fixtures/layer2.vrt`
-
-test('before', t => {
-  try {
-    fs.mkdirSync(outputDir)
-  } catch (e) {
-    console.log('Output folder already exists')
-  }
-  const vrt = fs.readFileSync(`${__dirname}/fixtures/layer.vrt`).toString()
-  // layers in the VRT must reference direct paths
-  const localVrt = vrt.replace(/dummy/g, `${__dirname}/fixtures`)
-  fs.writeFileSync(testVrt, localVrt)
+test('Set up', t => {
+  Helper.before()
   t.end()
 })
 
@@ -29,7 +19,7 @@ test('Try to create a dataset from a vrt that doesn\'t exist', t => {
   options.input = 'foobar!'
 
   try {
-    Shapefile.write(options)
+    Shapefile.createReadStream(options)
     .on('error', err => t.ok(err, 'Error handled gracefully'))
     .pipe(fs.createWriteStream(tmp))
   } catch (e) {
@@ -43,7 +33,7 @@ test('Provide a zip stream of a valid shapefile', t => {
   const output = `${__dirname}/output/${options.name}.zip`
   const tmp = `${__dirname}/output/${options.name}-tmp.zip`
 
-  Shapefile.write(options)
+  Shapefile.createReadStream(options)
   .on('error', error => {
     t.fail(error)
     t.end()
@@ -59,8 +49,8 @@ test('Provide a zip stream of a valid shapefile', t => {
       sizes.push(part.header.size)
     })
     const expectedFiles = ['dummy.shp', 'dummy.dbf', 'dummy.shx', 'dummy.prj', 'dummy.cpg']
-    expectedFiles.forEach(file => t.equal(names.indexOf(file) > -1, true, `${file} exists in zip`))
-    sizes.forEach((size, i) => t.equal(size > 0, true, `${names[i]} has content`))
+    expectedFiles.forEach(file => t.equal(names.indexOf(file) > -1, true, `${file.split('.')[1]} exists in zip`))
+    sizes.forEach((size, i) => t.equal(size > 0, true, `${names[i].split('.')[1]} has content`))
     fs.unlinkSync(output)
     fs.unlinkSync(tmp)
     t.end()
@@ -75,7 +65,7 @@ test('Write metadata into the zip', t => {
   const output = `${__dirname}/output/${options.name}.zip`
   const tmp = `${__dirname}/output/${options.name}-tmp.zip`
 
-  Shapefile.write(options)
+  Shapefile.createReadStream(options)
   .on('error', error => {
     t.fail(error)
     t.end()
@@ -89,13 +79,8 @@ test('Write metadata into the zip', t => {
   })
 })
 
-test('after', t => {
-  try {
-    fs.unlinkSync('./fixtures/layer2.vrt')
-  } catch (e) {
-    console.error('New layer fixture did not exist')
-  }
-  rimraf.sync(outputDir)
+test('Teardown', t => {
+  Helper.after()
   t.end()
 })
 
@@ -109,7 +94,7 @@ function defaultOptions () {
     name: 'dummy',
     format: 'zip',
     geometryType: 'Point',
-    input: testVrt,
+    input: Helper.testVrt,
     path: `${__dirname}/output`
   }
 }
