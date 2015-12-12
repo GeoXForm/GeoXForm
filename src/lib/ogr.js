@@ -17,23 +17,16 @@ module.exports = {
     const readStream = _()
     options.name = sanitize(options.name)
     const cmd = this.createCmd(options)
+    
     if (options.format === 'zip') return Shapefile.createReadStream(options)
+    
     const ogr = spawn('ogr2ogr', cmd)
     ogr.stdout.on('data', data => readStream.write(data))
     ogr.on('close', c => {
-      if (c > 0) {
-        readStream.emit('error', new Error('OGR Failed'))
-      } else {
-        readStream.end()  
-      }
+      if (c > 0) readStream.emit('error', new Error('OGR Failed'))
+      else readStream.end()
     })
     
-    // ogr.stout.on('close', code => {
-    //   if (code && code > 1) {
-    //     console.log(code)
-    //     readStream.emit('error', new Error('OGR process failed'))
-    //   }
-    // })
     return readStream
   },
   /**
