@@ -4,15 +4,12 @@ const GeoJson = require('../src/lib/geojson')
 const test = require('tape')
 const rimraf = require('rimraf')
 const fs = require('fs')
+const Helper = require('./helper')
 
 const output = `${__dirname}/output`
 
-test('before', function (t) {
-  try {
-    fs.mkdirSync(output)
-  } catch (e) {
-    console.log('Output folder already exists')
-  }
+test('Set up', t => {
+  Helper.before()
   t.end()
 })
 
@@ -42,7 +39,7 @@ test('Write valid geojson from a stream of feature objects', function (t) {
   })
 })
 
-// test('after', function (t) {
-//   rimraf.sync(output)
-//   t.end()
-// })
+test('Teardown', t => {
+  Helper.after()
+  t.end()
+})

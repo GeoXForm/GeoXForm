@@ -1,37 +1,40 @@
-// take in a stream of geojson and produce a vrt
 const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
 const mkdirp = require('mkdirp')
 
-function write (stream, options, callback) {
-  let partsCount = 0
-  const size = options.size || 5000
-  mkdirp.sync(options.path)  
-  const vrtStream = createVrtStream(options.path)
-  const partStream = _()
-  _(stream)
-	.splitBy(',{')
-	.map(filter)
-  .errors(err => {
-    stream.destroy()
-    callback(err)
-  })
-  .batch(size)
-  .tap(batch => {
-    partsCount++
-    addVrtPart(batch, partsCount, options.path, vrtStream).pipe(partStream)
-  })
-  .done(() => {
-    // we need a way to know if all the sub-streams have finished
-    // there's got. to. be. a better way to do this
-    partStream.each((partsWritten) => {
-      if (partsWritten === partsCount) {
-        endVrtSteam(vrtStream)
-        callback(null)
-      }
+module.exports ={
+  create: function (input, options, callback) {
+    let partsCount = 0
+    const size = options.size || 5000
+    mkdirp.sync(options.path)
+    const vrtStream = createVrtStream(options.path)
+    const partStream = _()
+    const stream = _(input)
+    stream
+  	.splitBy(',{')
+  	.map(filter)
+    .errors(err => {
+      input.destroy()
+      callback(err)
     })
-  })
+    .batch(size)
+    .tap(batch => {
+      partsCount++
+      addVrtPart(batch, partsCount, options.path, vrtStream).pipe(partStream)
+    })
+    .done(() => {
+      // we need a way to know if all the sub-streams have finished
+      // there's got. to. be. a better way to do this
+      // TODO look at Highland nfcall
+      partStream.each((partsWritten) => {
+        if (partsWritten === partsCount) {
+          endVrtStream(vrtStream)
+          callback(null)
+        }
+      })
+    })
+  }
 }
 
 function filter (string) {
@@ -54,7 +57,7 @@ function writeJsonPart (batch, fileName, index) {
   const fileStream = fs.createWriteStream(fileName)
   Geojson.createReadStream(_(batch))
   .pipe(fileStream)
-  .on('finish', () => { outStream.write(index) })
+  .on('finish', () => outStream.write(index))
   return outStream
 }
 
@@ -64,11 +67,7 @@ function createVrtStream (path) {
   return vrtStream
 }
 
-function endVrtSteam (stream) {
+function endVrtStream (stream) {
   stream.write('</OGRVRTDataSource>')
   stream.end()
-}
-
-module.exports = {
-  write: write
 }

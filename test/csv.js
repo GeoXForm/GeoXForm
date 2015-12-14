@@ -11,7 +11,7 @@ test('Create a csv readstream', t => {
   t.plan(1)
   const options = defaultOptions()
   const rows = []
-  Ogr.createReadStream(options)
+  Ogr.createReadStream(Helper.testVrt, options)
     .on('error', e => {
       console.log(e); t.end(e)
     })
@@ -28,9 +28,8 @@ test('Create a csv readstream', t => {
 test('Gracefully handle a vrt that does not exist', t => {
   t.plan(1)
   const options = defaultOptions()
-  options.input = 'foobar!'
   try {
-    Ogr.createReadStream(options)
+    Ogr.createReadStream('foobar!', options)
       .on('error', err => {
         t.ok(err, 'Error was caught in the correct place')
         t.end()
@@ -51,7 +50,6 @@ function defaultOptions () {
     name: 'dummy',
     format: 'csv',
     geometryType: 'Point',
-    input: Helper.testVrt,
     fields: ['foo', 'bar', 'baz']
   }
 }

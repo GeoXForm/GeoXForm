@@ -7,12 +7,12 @@ test('Set up', t => {
   t.end()
 })
 
-test('Create a csv readstream', t => {
+test('Create a kml readstream', t => {
   t.plan(1)
   const options = defaultOptions()
   const rows = []
-  Ogr.createReadStream(options)
-  .on('error', e => {console.log(e); t.end(e)})  
+  Ogr.createReadStream(Helper.testVrt, options)
+  .on('error', e => {console.log(e); t.end(e)})
   .splitBy('<Placemark>')
   .compact()
   .each(row => {
@@ -26,9 +26,8 @@ test('Create a csv readstream', t => {
 test('Gracefully handle a vrt that does not exist', t => {
   t.plan(1)
   const options = defaultOptions()
-  options.input = 'foobar!'
   try {
-    Ogr.createReadStream(options)
+    Ogr.createReadStream('foobar!', options)
     .on('error', err => {
       t.ok(err, 'Error was caught in the correct place')
       t.end()
@@ -48,7 +47,6 @@ function defaultOptions () {
   return {
     name: 'dummy',
     format: 'kml',
-    geometryType: 'Point',
-    input: Helper.testVrt
+    geometryType: 'Point'
   }
 }

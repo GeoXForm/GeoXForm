@@ -12,9 +12,10 @@ const ogrFormats = {
 }
 
 module.exports = {
-  createReadStream: function (options) {
+  createReadStream: function (input, options) {
     const readStream = _()
     options.name = sanitize(options.name)
+    options.input = input
     const cmd = this.createCmd(options)
 
     if (options.format === 'zip') return require('./shapefile').createReadStream(options)
@@ -30,11 +31,7 @@ module.exports = {
   },
   /**
    * Gets a set of OGR Parameters for an export
-
-   * @param {string} format - the output format
-   * @param {string} inFile - the geojson or vrt to use as a source
-   * @param {string} outFile - the file to write
-   * @param {object} geojson - a geojson object used in the xform
+   *  
    * @param {object} options - potentially contains a fields object
    */
   createCmd: function (options) {
