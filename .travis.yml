@@ -11,4 +11,4 @@ addons:
     sources:
     - ubuntugis/ubuntugis-unstable
     packages:
-    - gdal
+    - gdal-bin
