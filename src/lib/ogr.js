@@ -1,7 +1,6 @@
 const spawn = require('child_process').spawn
 const _ = require('highland')
 const sanitize = require('sanitize-filename')
-const Shapefile = require('./shapefile')
 
 const ogrFormats = {
   kml: 'KML',
@@ -17,16 +16,16 @@ module.exports = {
     const readStream = _()
     options.name = sanitize(options.name)
     const cmd = this.createCmd(options)
-    
-    if (options.format === 'zip') return Shapefile.createReadStream(options)
-    
+
+    if (options.format === 'zip') return require('./shapefile').createReadStream(options)
+
     const ogr = spawn('ogr2ogr', cmd)
     ogr.stdout.on('data', data => readStream.write(data))
     ogr.on('close', c => {
       if (c > 0) readStream.emit('error', new Error('OGR Failed'))
       else readStream.end()
     })
-    
+
     return readStream
   },
   /**

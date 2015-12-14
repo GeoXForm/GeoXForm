@@ -52,7 +52,7 @@ test('Create a command for a shapefile', t => {
   t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f "ESRI Shapefile" ./dummy layer.vrt -nlt POINT -fieldmap identity -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
 })
 
-test('Creat the command for a shapefile when a wkt is passed in', t => {
+test('Create the command for a shapefile when a wkt is passed in', t => {
   t.plan(1)
   const options = {
     name: 'dummy',
@@ -62,5 +62,5 @@ test('Creat the command for a shapefile when a wkt is passed in', t => {
   }
 
   const cmd = Ogr.createCmd(options)
-  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f "ESRI Shapefile" ./dummy layer.vrt -nlt POINT -t_srs \'PROJECTION\' -fieldmap identity -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
+  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f "ESRI Shapefile" ./dummy layer.vrt -nlt POINT -fieldmap identity -t_srs \'PROJECTION\' -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
 })

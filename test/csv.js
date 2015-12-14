@@ -12,15 +12,17 @@ test('Create a csv readstream', t => {
   const options = defaultOptions()
   const rows = []
   Ogr.createReadStream(options)
-  .on('error', e => {console.log(e); t.end(e)})  
-  .split()
-  .compact()
-  .each(row => {
-    rows.push(row)
+    .on('error', e => {
+      console.log(e); t.end(e)
     })
-  .done(() => {
-    t.equal(rows.length, 101, 'All rows written to the stream')
-   })
+    .split()
+    .compact()
+    .each(row => {
+      rows.push(row)
+    })
+    .done(() => {
+      t.equal(rows.length, 101, 'All rows written to the stream')
+    })
 })
 
 test('Gracefully handle a vrt that does not exist', t => {
@@ -29,11 +31,11 @@ test('Gracefully handle a vrt that does not exist', t => {
   options.input = 'foobar!'
   try {
     Ogr.createReadStream(options)
-    .on('error', err => {
-      t.ok(err, 'Error was caught in the correct place')
-      t.end()
-     })
-    .done(() => t.end())
+      .on('error', err => {
+        t.ok(err, 'Error was caught in the correct place')
+        t.end()
+      })
+      .done(() => t.end())
   } catch (e) {
     t.fail('Error was uncaught')
   }

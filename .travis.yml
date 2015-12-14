@@ -1,0 +1,12 @@
+language: node_js
+sudo: false
+cache:
+  - node_modules
+script:
+  - npm test
+addons:
+  apt:
+    sources:
+    - ubuntugis/ubuntugis-unstable
+    packages:
+    - gdal

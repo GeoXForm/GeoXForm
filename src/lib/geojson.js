@@ -1,5 +1,4 @@
 const _ = require('highland')
-var files = require('koop').files
 
 function geojson (cache, table, options) {
   const featureStream = cache.createExportStream(table, options)
@@ -7,14 +6,13 @@ function geojson (cache, table, options) {
   return createReadStream(featureStream, uploadStream)
 }
 
-function createReadStream (input, output, options) {
+function createReadStream (input, options) {
   const start = '{"type":"FeatureCollection","features":['
   const end = ']}'
-  const features = options && options.json ? input.compact().map(JSON.stringify) : input.compact()
+  const features = options && options.json ? _(input).compact().map(JSON.stringify) : _(input).compact()
   const readStream = _([start])
   .concat(features.intersperse(','))
   .append(end)
-  .pipe(output)
 
   return readStream
 }

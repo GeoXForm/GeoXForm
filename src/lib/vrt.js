@@ -2,18 +2,25 @@
 const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
+const mkdirp = require('mkdirp')
 
 function write (stream, options, callback) {
   let partsCount = 0
   const size = options.size || 5000
+  mkdirp.sync(options.path)  
   const vrtStream = createVrtStream(options.path)
   const partStream = _()
-  stream.batch(size).tap(batch => {
+  _(stream)
+	.splitBy(',{')
+	.map(filter)
+  .errors(err => {
+    stream.destroy()
+    callback(err)
+  })
+  .batch(size)
+  .tap(batch => {
     partsCount++
     addVrtPart(batch, partsCount, options.path, vrtStream).pipe(partStream)
-  })
-  .errors((err) => {
-    callback(err)
   })
   .done(() => {
     // we need a way to know if all the sub-streams have finished
@@ -25,6 +32,11 @@ function write (stream, options, callback) {
       }
     })
   })
+}
+
+function filter (string) {
+  const parts = string.split('"features":[{')
+  return `{${parts[parts.length - 1]}`.replace(/]}}]}/, ']}')
 }
 
 function addVrtPart (batch, index, path, stream) {
@@ -40,7 +52,8 @@ function addMetadata (stream, fileName) {
 function writeJsonPart (batch, fileName, index) {
   const outStream = _()
   const fileStream = fs.createWriteStream(fileName)
-  Geojson.write(_(batch), fileStream)
+  Geojson.createReadStream(_(batch))
+  .pipe(fileStream)
   .on('finish', () => { outStream.write(index) })
   return outStream
 }

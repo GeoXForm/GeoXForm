@@ -29,3 +29,4 @@ node_modules
 .otto
 .ottoid
 .vscode
+jsconfig.json

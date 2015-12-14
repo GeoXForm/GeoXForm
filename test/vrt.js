@@ -3,7 +3,6 @@ const Vrt = require('../src/lib/vrt')
 const test = require('tape')
 const fs = require('fs')
 const rimraf = require('rimraf')
-const JsonStream = require('jsonstream')
 
 const output = `${__dirname}/output`
 
@@ -18,8 +17,7 @@ test('before', t => {
 
 test('write a vrt', t => {
   t.plan(6)
-  const fixture = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
-  const stream = _(fixture).pipe(JsonStream.parse('features.*')).pipe(_()).map(JSON.stringify)
+  const stream  = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
 
   Vrt.write(stream, { path: output, size: 33 }, err => {
     if (err) { return t.fail(err) }

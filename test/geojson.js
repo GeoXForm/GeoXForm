@@ -21,7 +21,8 @@ test('Write valid geojson from a stream of feature strings', function (t) {
   const featureStream = _(fs.createReadStream(`${__dirname}/fixtures/features.txt`)).split()
   const fileName = `${output}/test.geojson`
   const outStream = fs.createWriteStream(fileName)
-  GeoJson.createReadStream(featureStream, outStream)
+  GeoJson.createReadStream(featureStream)
+  .pipe(outStream)
   .on('finish', () => {
     const written = JSON.parse(fs.readFileSync(fileName))
     t.equal(written.features.length, 100, 'GeoJSON has expected features')
@@ -33,14 +34,15 @@ test('Write valid geojson from a stream of feature objects', function (t) {
   const featureStream = _(fs.createReadStream(`${__dirname}/fixtures/features.txt`)).split().compact().map(JSON.parse)
   const fileName = `${output}/test.geojson`
   const outStream = fs.createWriteStream(fileName)
-  GeoJson.createReadStream(featureStream, outStream, {json: true})
+  GeoJson.createReadStream(featureStream, {json: true})
+  .pipe(outStream)
   .on('finish', () => {
     const written = JSON.parse(fs.readFileSync(fileName))
     t.equal(written.features.length, 100, 'GeoJSON has expected features')
   })
 })
 
-test('after', function (t) {
-  rimraf.sync(output)
-  t.end()
-})
+// test('after', function (t) {
+//   rimraf.sync(output)
+//   t.end()
+// })
