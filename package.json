@@ -1,6 +1,6 @@
 {
   "name": "koop-exporter",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Handles exporting for koop",
   "main": "index.js",
   "dependencies": {
