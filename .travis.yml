@@ -8,7 +8,5 @@ script:
   - npm test
 addons:
   apt:
-    sources:
-    - ubuntugis/ubuntugis-unstable
     packages:
     - gdal-bin
