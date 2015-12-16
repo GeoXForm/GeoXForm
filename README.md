@@ -8,7 +8,7 @@
 - Get GeoJSON from the web -> transform into csv -> write to disk
 
 ``` javascript
-const GeoXForm = require('geoxform')
+const GeoXForm = require('geo-xform')
 const request = require('request')
 const fs = require('fs')
 const id = '593b88391b614123890f54a1db8fbf55_0'
