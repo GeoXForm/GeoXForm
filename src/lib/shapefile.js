@@ -1,24 +1,21 @@
 const _ = require('highland')
 const fs = require('fs')
 const path = require('path')
-const Ogr = require('./ogr')
 const exec = require('child_process').exec
+const Cmd = require('./ogr-cmd')
 
-module.exports = {
-  createReadStream: function (options) {
-    const readStream = _()
-    const cmd = `ogr2ogr ${Ogr.createCmd(options).join(' ')}`
-
-    exec(cmd, err => {
-      if (err) return readStream.emit('error', new Error('Call to OGR failed'))
-      const folder = `${options.path}/${options.name}`
-      if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
-      createZipStream(folder)
-      .on('error', e => readStream.emit('error', e))
-      .pipe(readStream)
-    })
-    return readStream
-  }
+function createStream (options) {
+  const readStream = _()
+  const cmd = `ogr2ogr ${Cmd.create('zip', options).join(' ')}`
+  exec(cmd, err => {
+    if (err) return readStream.emit('error', new Error('Call to OGR failed'))
+    const folder = `${options.path}/${options.name}`
+    if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
+    createZipStream(folder)
+    .on('error', e => readStream.emit('error', e))
+    .pipe(readStream)
+  })
+  return readStream
 }
 
 function createZipStream (input) {
@@ -39,3 +36,5 @@ function renameFiles (input) {
     fs.renameSync(oldName, newName)
   })
 }
+
+module.exports = {createStream}

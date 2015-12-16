@@ -19,7 +19,7 @@ test('Try to create a dataset from a vrt that doesn\'t exist', t => {
   options.input = 'foobar!'
 
   try {
-    Shapefile.createReadStream(options)
+    Shapefile.createStream(options)
     .on('error', err => t.ok(err, 'Error handled gracefully'))
     .pipe(fs.createWriteStream(tmp))
   } catch (e) {
@@ -33,18 +33,17 @@ test('Provide a zip stream of a valid shapefile', t => {
   const output = `${__dirname}/output/${options.name}.zip`
   const tmp = `${__dirname}/output/${options.name}-tmp.zip`
 
-  Shapefile.createReadStream(options)
+  Shapefile.createStream(options)
   .on('error', error => {
     t.fail(error)
     t.end()
   })
-  .on('finish', () => console.log('lets make whooopie'))
   .pipe(fs.createWriteStream(tmp))
   .on('finish', () => {
     const parts = getContents(output)
     const names = []
     const sizes = []
-    parts.map(part => {
+    parts.forEach(part => {
       names.push(part.entryName)
       sizes.push(part.header.size)
     })
@@ -65,7 +64,7 @@ test('Write metadata into the zip', t => {
   const output = `${__dirname}/output/${options.name}.zip`
   const tmp = `${__dirname}/output/${options.name}-tmp.zip`
 
-  Shapefile.createReadStream(options)
+  Shapefile.createStream(options)
   .on('error', error => {
     t.fail(error)
     t.end()
@@ -93,8 +92,8 @@ function defaultOptions () {
   return {
     name: 'dummy',
     format: 'zip',
-    geometryType: 'Point',
-    input: Helper.testVrt,
+    geometry: 'Point',
+    input: Helper.testPath,
     path: `${__dirname}/output`
   }
 }

@@ -14,21 +14,26 @@ test('Set up', t => {
 
 test('write a vrt', t => {
   t.plan(6)
-  const stream  = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
-
-  Vrt.create(stream, { path: output, size: 33 }, err => {
-    if (err) { return t.fail(err) }
-    [1, 2, 3, 4].forEach(n => {
-      const fileLength = fs.readFileSync(`${output}/part.${n}.json`).toString().length
-      t.equal(fileLength > 0, true, `JSON part ${n} of 4 written`)
+  const vrtPath = `${output}/layer.vrt`
+  fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
+  .pipe(Vrt.createStream({ path: output, size: 33 }))
+  .pipe(fs.createWriteStream(vrtPath))
+  .on('finish', () => {
+    [0, 1, 2, 3].forEach(n => {
+      const file = fs.readFileSync(`${output}/part.${n}.json`)
+      try {
+				JSON.parse(file)
+				t.pass(`JSON part ${n + 1} of 4 parsed successfully`)
+      } catch (e) {
+        t.fail(`JSON part ${n + 1} of 4 could not be parsed`)
+      }
     })
-    const vrtPath = `${output}/layer.vrt`
     t.ok(fs.statSync(vrtPath), 'VRT written')
     t.equal(fs.readFileSync(vrtPath).toString().length > 0, true, 'VRT has content')
   })
 })
 
-test('Teardown', t => {
-  Helper.after()
-  t.end()
-})
+// test('Teardown', t => {
+//  Helper.after()
+//  t.end()
+// })
