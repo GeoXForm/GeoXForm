@@ -1,7 +1,7 @@
 {
-  "name": "koop-exporter",
-  "version": "0.0.2",
-  "description": "Handles exporting for koop",
+  "name": "GeoXForm",
+  "version": "1.0.0",
+  "description": "A library for transforming large streams of geojson into csv, kml, shapefile and other formats",
   "main": "index.js",
   "dependencies": {
     "highland": "^2.5.1",
@@ -26,18 +26,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/koopjs/koop-exporter.git"
+    "url": "git+https://github.com/koopjs/geoxform.git"
   },
   "keywords": [
-    "koop",
+    "ogr",
+		"transform",
     "gis",
     "geojson",
+		"csv",
+		"kml",
     "shapefile"
   ],
   "author": "Daniel Fenton <dfenton@esri.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/koopjs/koop-exporter/issues"
+    "url": "https://github.com/koopjs/geoxform/issues"
   },
-  "homepage": "https://github.com/koopjs/koop-exporter#readme"
+  "homepage": "https://github.com/koopjs/geoxform#readme"
 }
