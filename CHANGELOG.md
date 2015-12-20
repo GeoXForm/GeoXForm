@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [Unreleased]
 ### Changed
 * Clean up temporary files after finishing a convert stream
 * No need to specify fields or geometry when using top-level createStream API
