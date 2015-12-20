@@ -17,7 +17,7 @@ function createStream (format, options) {
     stream
     .pipe(vrt)
     .on('finish', () => {
-      if (format === 'zip') return shapefile.createStream(options)
+      if (format === 'zip') return Shapefile.createStream(options)
       const ogr = spawn('ogr2ogr', cmd)
       // TODO can I just pipe out vs writing to temp?
       ogr.stdout.on('data', data => temp.write(data))

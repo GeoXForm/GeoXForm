@@ -1,7 +1,6 @@
 const GeoXForm = require('../src')
 const test = require('tape')
 const Helper = require('./helper')
-const _ = require('highland')
 const fs = require('fs')
 
 test('Set up', t => {
@@ -35,7 +34,7 @@ test('Convert geojson to csv', t => {
   .done(() => t.equal(rows.length, 101, 'CSV generated successfully'))
 })
 
-test('Teardown', t=> {
+test('Teardown', t => {
   Helper.after()
   t.end()
 })
