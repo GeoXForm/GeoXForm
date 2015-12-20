@@ -86,7 +86,7 @@ Create a stream that takes in a layer and outputs transformed data
 }
 ```
 
-[npm-img]: https://img.shields.io/npm/v/geoxform.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/geoxform
-[travis-image]: https://img.shields.io/travis/koopjs/geoxform.svg?style=flat-square
-[travis-url]: https://travis-ci.org/koopjs/geoxform
+[npm-img]: https://img.shields.io/npm/v/geo-xform.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/geo-xform
+[travis-image]: https://img.shields.io/travis/koopjs/GeoXForm.svg?style=flat-square
+[travis-url]: https://travis-ci.org/koopjs/GeoXForm
