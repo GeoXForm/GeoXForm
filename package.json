@@ -1,6 +1,6 @@
 {
   "name": "geo-xform",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library for transforming large streams of geojson into csv, kml, shapefile and other formats",
   "main": "index.js",
   "dependencies": {
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test": "standard src && babel-tape-runner test/*.js | tap-spec",
-    "build": "babel src --out-dir ./"
+    "build": "babel src --out-dir ."
   },
   "repository": {
     "type": "git",
