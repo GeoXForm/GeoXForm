@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* Clean up temporary files after finishing a convert stream
+
 ## [1.0.0] - 2015-12-16
 ### Added
 * New top level method `createStream` takes in a geojson stream and returns a stream of the object transformed by OGR2OGR
