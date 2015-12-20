@@ -1,13 +1,11 @@
 const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
-const mkdirp = require('mkdirp')
 
 function createStream (options) {
   const size = options.size || 5000
-  mkdirp.sync(options.path)
 
-  return _.pipeline(stream => {
+  const output = _.pipeline(stream => {
     let first = true
     let index = 0
     return stream
@@ -15,9 +13,11 @@ function createStream (options) {
     .map(filter)
     .batch(size)
     .consume((err, batch, push, next) => {
+      if (err) push(err)
       if (first) {
         push(null, '<OGRVRTDataSource>')
         first = false
+        output.emit('properties', sample(batch))
       }
       if (batch === _.nil || batch === '{}') {
         push(null, '</OGRVRTDataSource>')
@@ -32,6 +32,19 @@ function createStream (options) {
       })
     })
   })
+  return output
+}
+
+function sample (batch) {
+  let sample = batch.find(f => {
+    const feature = JSON.parse(f)
+    if (feature.geometry && feature.geometry.type) return true
+    else return false
+  })
+  sample = JSON.parse(sample || batch[0])
+  const geometry = sample.geometry ? sample.geometry.type : 'NONE'
+  const fields = Object.keys(sample.properties)
+  return {geometry, fields}
 }
 
 function filter (string) {
@@ -48,16 +61,6 @@ function writeJsonPart (batch, fileName) {
   return _(batch)
   .pipe(Geojson.createStream())
   .pipe(fileStream)
-}
-
-function createVrtStream (path) {
-  const vrtStream = fs.createWriteStream(`${path}/layer.vrt`)
-  vrtStream.write()
-  return vrtStream
-}
-
-function endVrtStream (stream) {
-  stream.write()
 }
 
 module.exports = {createStream}

@@ -13,7 +13,7 @@ const request = require('request')
 const fs = require('fs')
 const id = '593b88391b614123890f54a1db8fbf55_0'
 request.get(`http://opendata.arcgis.com/datasets/${id}.geojson`)
-.pipe(GeoXForm.createStream({format: 'csv', name: 'trees', geometry: 'point'}))
+.pipe(GeoXForm.createStream('csv'))
 .pipe(fs.createWriteStream('./trees.csv'))
 .on('finish', () => console.log('File written to trees.csv'))
 
@@ -44,8 +44,7 @@ Create a stream that takes in geojson of arbitrary size and returns data in the 
 - Options:
 ``` javascript
 {
-      geometry: string // on of ['point', 'line', 'polygon']
-      fields: array // the names of fields in a given dataset (csv only)
+      path: string // disk location to write temp files (optional)
       name: string // sets the name file parts (shapefile only)
       metadata: string // and xml string to write to file (shapefile only)
       srs: string // the spatial reference system for projecting transformed data (shapefile only)

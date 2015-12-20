@@ -11,7 +11,7 @@ test('Set up', t => {
 test('Convert geojson to kml', t => {
   t.plan(1)
   const geojson = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
-  const options = {format: 'kml', path: `${__dirname}/output`, geometry: 'point'}
+  const options = {format: 'kml', path: `${__dirname}/output`}
   const rows = []
   geojson
   .pipe(GeoXForm.createStream('kml', options))
@@ -24,7 +24,7 @@ test('Convert geojson to kml', t => {
 test('Convert geojson to csv', t => {
   t.plan(1)
   const geojson = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
-  const options = {format: 'csv', path: `${__dirname}/output`, geometry: 'point', fields: ['foo', 'bar']}
+  const options = {format: 'csv', path: `${__dirname}/output`}
   const rows = []
   geojson
   .pipe(GeoXForm.createStream('csv', options))

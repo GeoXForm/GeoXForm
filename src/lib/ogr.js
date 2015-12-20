@@ -8,15 +8,13 @@ const Cmd = require('./ogr-cmd')
 function createStream (format, options) {
   options.input = `${options.path}/layer.vrt`
   const vrt = fs.createWriteStream(options.input)
-  options.name = options.name ? sanitize(options.name) : 'output'
-
-  const cmd = Cmd.create(format, options)
-
   const output = _.pipeline(stream => {
     const temp = _()
     stream
     .pipe(vrt)
     .on('finish', () => {
+      options.name = options.name ? sanitize(options.name) : 'output'
+      const cmd = Cmd.create(format, options)
       if (format === 'zip') return Shapefile.createStream(options)
       const ogr = spawn('ogr2ogr', cmd)
       // TODO can I just pipe out vs writing to temp?
@@ -30,6 +28,8 @@ function createStream (format, options) {
     })
     return temp
   })
+  .on('properties', p => Object.assign(options, p))
+
   return output
 }
 
