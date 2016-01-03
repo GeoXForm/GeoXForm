@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Shapefile stream works correctly when called from `GeoXForm.createStream`
+
 ## [1.0.1] - 2015-12-20
 ### Changed
 * Clean up temporary files after finishing a convert stream

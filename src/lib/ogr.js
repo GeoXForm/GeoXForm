@@ -15,16 +15,22 @@ function createStream (format, options) {
     .on('finish', () => {
       options.name = options.name ? sanitize(options.name) : 'output'
       const cmd = Cmd.create(format, options)
-      if (format === 'zip') return Shapefile.createStream(options)
-      const ogr = spawn('ogr2ogr', cmd)
-      // TODO can I just pipe out vs writing to temp?
-      ogr.stdout.on('data', data => temp.write(data))
-      ogr.stderr.on('data', data => output.emit('log', {level: 'debug', message: data.toString()}))
-      ogr.on('close', c => {
-        output.emit('log', {level: 'info', message: `Executing: OGR2OGR ${cmd.join(' ')}`})
-        if (c > 0) output.emit('error', new Error('OGR Failed'))
-        else temp.end()
-      })
+      if (format === 'zip') {
+        Shapefile.createStream(options)
+        .on('error', e => output.emit('error', e))
+        .on('log', l => output.emit('log', l))
+        .pipe(temp)
+      } else {
+        const ogr = spawn('ogr2ogr', cmd)
+        // TODO can I just pipe out vs writing to temp?
+        ogr.stdout.on('data', data => temp.write(data))
+        ogr.stderr.on('data', data => output.emit('log', {level: 'debug', message: data.toString()}))
+        ogr.on('close', c => {
+          output.emit('log', {level: 'info', message: `Executing: OGR2OGR ${cmd.join(' ')}`})
+          if (c > 0) output.emit('error', new Error('OGR Failed'))
+          else temp.end()
+        })
+      }
     })
     return temp
   })
