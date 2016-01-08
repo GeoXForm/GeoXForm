@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Changed
+* Clean up after failure cases
+### Fixed
+* Fail gracefully with bad geojson while creating a vrt
+
 ## [1.0.2] - 2016-01-02
 ### Fixed
 * Shapefile stream works correctly when called from `GeoXForm.createStream`
