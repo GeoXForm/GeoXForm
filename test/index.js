@@ -1,7 +1,10 @@
+/* @flow */
+'use strict'
 const GeoXForm = require('../src')
 const test = require('tape')
 const Helper = require('./helper')
 const fs = require('fs')
+const _ = require('highland')
 
 test('Set up', t => {
   Helper.before()
@@ -52,7 +55,20 @@ test('Convert geojson to shapefile', t => {
   })
 })
 
-// test('Teardown', t => {
-//   Helper.after()
-//   t.end()
-// })
+test('Fail gracefully', t => {
+  t.plan(1)
+  const options = {path: `${__dirname}/output`, name: 'test'}
+  const zipPath = `${__dirname}/output/xformed.zip`
+  t.plan(1)
+  _(fs.createReadStream(`${__dirname}/fixtures/bad.txt`))
+  .pipe(GeoXForm.createStream('zip', options))
+  .on('error', e => {
+    t.ok(e, 'Error was emitted')
+  })
+  .pipe(fs.createWriteStream(zipPath))
+})
+
+test('Teardown', t => {
+  Helper.after()
+  t.end()
+})
