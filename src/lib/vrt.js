@@ -1,3 +1,5 @@
+/* @ flow */
+'use strict'
 const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
@@ -17,7 +19,12 @@ function createStream (options) {
       if (first) {
         push(null, '<OGRVRTDataSource>')
         first = false
-        output.emit('properties', sample(batch))
+        try {
+          output.emit('properties', sample(batch))
+        } catch (e) {
+          output.emit('error', e)
+          return output.destroy()
+        }
       }
       if (batch === _.nil || batch === '{}') {
         push(null, '</OGRVRTDataSource>')
