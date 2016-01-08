@@ -3,11 +3,14 @@
 const fs = require('fs')
 const Geojson = require('./geojson')
 const _ = require('highland')
+const EventEmitter = require('events').EventEmitter
+const util = require('util')
 
 function createStream (options) {
   const size = options.size || 5000
 
   const output = _.pipeline(stream => {
+    let watcher
     let first = true
     let index = 0
     return stream
@@ -16,7 +19,13 @@ function createStream (options) {
     .batch(size)
     .consume((err, batch, push, next) => {
       if (err) push(err)
+      if (batch === _.nil) return
       if (first) {
+        watcher = new Watcher()
+        watcher.on('finish', () => {
+          push(null, '</OGRVRTDataSource>')
+          return push(null, _.nil)
+        })
         push(null, '<OGRVRTDataSource>')
         first = false
         try {
@@ -26,17 +35,11 @@ function createStream (options) {
           return output.destroy()
         }
       }
-      if (batch === _.nil || batch === '{}') {
-        push(null, '</OGRVRTDataSource>')
-        return push(null, _.nil)
-      }
       const fileName = `${options.path}/part.${index}.json`
-      writeJsonPart(batch, fileName, index)
-      .on('finish', () => {
-        push(null, addMetadata(fileName))
-        index++
-        next()
-      })
+      push(null, addMetadata(fileName))
+      watcher.watch(writeJsonPart(batch, fileName, index))
+      index++
+      next()
     })
   })
   return output
@@ -68,6 +71,23 @@ function writeJsonPart (batch, fileName) {
   return _(batch)
   .pipe(Geojson.createStream())
   .pipe(fileStream)
+}
+
+// This object's job is to make sure that we don't close the stream until
+// all the vrt parts have been fully written to disk
+function Watcher () {
+  this.writers = []
+}
+util.inherits(Watcher, EventEmitter)
+
+Watcher.prototype.watch = function (writer) {
+  this.writers.push(false)
+  const index = this.writers.length - 1
+  writer.on('finish', () => {
+    this.writers[index] = true
+    // this will emit finish when all the outstanding writers come back
+    if (this.writers.indexOf(false) < 0) this.emit('finish')
+  })
 }
 
 module.exports = {createStream}
