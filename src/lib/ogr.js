@@ -1,3 +1,5 @@
+/* @flow */
+'use strict'
 const spawn = require('child_process').spawn
 const _ = require('highland')
 const sanitize = require('sanitize-filename')

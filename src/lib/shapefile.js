@@ -1,3 +1,5 @@
+/* @flow */
+'use strict'
 const _ = require('highland')
 const fs = require('fs')
 const path = require('path')

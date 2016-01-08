@@ -1,3 +1,6 @@
+/* @flow */
+'use strict'
+
 const _ = require('highland')
 
 function createStream (options) {

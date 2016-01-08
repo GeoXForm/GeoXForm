@@ -1,3 +1,5 @@
+/* @flow */
+'use strict'
 /**
  * Gets a set of OGR Parameters for an export
  *
