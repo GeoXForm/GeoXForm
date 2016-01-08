@@ -1,9 +1,10 @@
-const _ = require('highland')
+/* @ flow */
+'use strict'
 const Vrt = require('../src/lib/vrt')
 const test = require('tape')
 const fs = require('fs')
-const rimraf = require('rimraf')
 const Helper = require('./helper')
+const _ = require('highland')
 
 const output = `${__dirname}/output`
 
@@ -22,8 +23,8 @@ test('write a vrt', t => {
     [0, 1, 2, 3].forEach(n => {
       const file = fs.readFileSync(`${output}/part.${n}.json`)
       try {
-				JSON.parse(file)
-				t.pass(`JSON part ${n + 1} of 4 parsed successfully`)
+        JSON.parse(file)
+        t.pass(`JSON part ${n + 1} of 4 parsed successfully`)
       } catch (e) {
         t.fail(`JSON part ${n + 1} of 4 could not be parsed`)
       }
@@ -33,7 +34,18 @@ test('write a vrt', t => {
   })
 })
 
-// test('Teardown', t => {
-//  Helper.after()
-//  t.end()
-// })
+test('fail gracefully when geojson input is bad', t => {
+  t.plan(1)
+  const vrtPath = `${output}/layer.vrt`
+  _([{}])
+  .pipe(Vrt.createStream({ path: output, size: 33 }))
+  .on('error', e => {
+    t.ok(e, 'Error emitted in expected place')
+  })
+  .pipe(fs.createWriteStream(vrtPath))
+})
+
+test('Teardown', t => {
+  Helper.after()
+  t.end()
+})
