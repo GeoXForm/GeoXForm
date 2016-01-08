@@ -30,5 +30,5 @@ node_modules
 .ottoid
 .vscode
 jsconfig.json
-./index.js
-./lib
+/index.js
+/lib
