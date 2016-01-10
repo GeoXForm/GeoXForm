@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).j
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [1.0.6] - 2016-01-10
+### Fixed
+* Add missing package
 
 ## [1.0.5] - 2016-01-10
 ### Changed
@@ -41,7 +45,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).j
 ### Added
 * Initial release: API supports creating VRTs, Geojson, shapefile, kml and csv
 
-[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.6...HEAD
+[1.0.6]: https://github.com/koopjs/geoxform/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/koopjs/geoxform/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/koopjs/geoxform/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/koopjs/geoxform/compare/v1.0.2...v1.0.3
