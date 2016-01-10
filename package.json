@@ -6,6 +6,7 @@
   "dependencies": {
     "highland": "^2.5.1",
     "mkdirp": "^0.5.1",
+    "package": "^1.0.1",
     "randomstring": "^1.1.3",
     "rimraf": "^2.5.0",
     "sanitize-filename": "^1.5.3"

@@ -5,12 +5,13 @@ const Geojson = require('./geojson')
 const _ = require('highland')
 const EventEmitter = require('events').EventEmitter
 const util = require('util')
+const lodash = require('lodash')
 
 function createStream (options) {
   const size = options.size || 5000
 
   const output = _.pipeline(stream => {
-    let watcher
+    const watcher = new Watcher()
     let first = true
     let index = 0
     return stream
@@ -21,7 +22,6 @@ function createStream (options) {
       if (err) push(err)
       if (batch === _.nil) return
       if (first) {
-        watcher = new Watcher()
         watcher.on('finish', () => {
           push(null, '</OGRVRTDataSource>')
           return push(null, _.nil)
@@ -37,7 +37,8 @@ function createStream (options) {
       }
       const fileName = `${options.path}/part.${index}.json`
       push(null, addMetadata(fileName))
-      watcher.watch(writeJsonPart(batch, fileName, index))
+      const writer = writeLayer(batch, fileName)
+      watcher.watch(writer)
       index++
       next()
     })
@@ -46,7 +47,7 @@ function createStream (options) {
 }
 
 function sample (batch) {
-  let sample = batch.find(f => {
+  let sample = lodash.find(f => {
     const feature = JSON.parse(f)
     if (feature.geometry && feature.geometry.type) return true
     else return false
@@ -58,7 +59,9 @@ function sample (batch) {
 }
 
 function filter (string) {
+  // strip off characters if this is the first geojson feature
   const parts = string.split('"features":[{')
+  // handle the case where this is the last
   return `{${parts[parts.length - 1]}`.replace(/]}}]}/, ']}}')
 }
 
@@ -66,7 +69,7 @@ function addMetadata (fileName) {
   return `<OGRVRTLayer name="OGRGeoJSON"><SrcDataSource>${fileName}</SrcDataSource></OGRVRTLayer>`
 }
 
-function writeJsonPart (batch, fileName) {
+function writeLayer (batch, fileName) {
   const fileStream = fs.createWriteStream(fileName)
   return _(batch)
   .pipe(Geojson.createStream())
