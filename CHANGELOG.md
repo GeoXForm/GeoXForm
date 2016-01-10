@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.0.4] - 2016-01-10
 ### Fixed
 * Fixed race condition in `lib/vrt`
 
@@ -37,7 +37,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * Initial release: API supports creating VRTs, Geojson, shapefile, kml and csv
 
-[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/koopjs/geoxform/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/koopjs/geoxform/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/koopjs/geoxform/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/koopjs/geoxform/compare/v1.0.0...v1.0.1
