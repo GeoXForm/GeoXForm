@@ -28,5 +28,6 @@ module.exports = {
   before: before,
   after: after,
   testPath: testVrt,
-  vrt: function () { return fs.createReadStream(testVrt) }
+  vrt: function () { return fs.createReadStream(testVrt) },
+  malformedVrt: function () { return fs.createReadStream(`${__dirname}/fixtures/malformed.vrt`) }
 }

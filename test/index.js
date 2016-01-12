@@ -47,8 +47,8 @@ test('Convert geojson to shapefile', t => {
   .pipe(fs.createWriteStream(zipPath))
   .on('finish', () => {
     try {
-      fs.statSync(zipPath)
-      t.pass('Zip written successfully')
+      const stat = fs.statSync(zipPath)
+      t.equal(stat.size, 2927, 'Zip written successfully')
     } catch (e) {
       t.fail('Zip not written sucessfully')
     }

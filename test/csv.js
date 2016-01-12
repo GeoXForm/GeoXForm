@@ -1,7 +1,6 @@
 const test = require('tape')
 const Ogr = require('../src/lib/ogr.js')
 const Helper = require('./helper')
-const _ = require('highland')
 
 test('Set up', t => {
   Helper.before()
@@ -31,13 +30,13 @@ test('Gracefully handle a malformed VRT', t => {
   t.plan(1)
   const options = defaultOptions()
   try {
-    _(['Foobar!'])
+    Helper.malformedVrt()
     .pipe(Ogr.createStream('csv', options))
     .on('error', err => {
       t.ok(err, 'Error was caught in the correct place')
       t.end()
     })
-    .done(() => t.end())
+    .on('finish', () => t.end())
   } catch (e) {
     t.fail('Error was uncaught')
   }
