@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [1.0.7] - 2016-01-12
 ### Changed
 * `GeoXForm.createStream` will emit an error when OGR does
 
@@ -49,7 +49,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * Initial release: API supports creating VRTs, Geojson, shapefile, kml and csv
 
-[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.6...HEAD
+[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/koopjs/geoxform/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/koopjs/geoxform/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/koopjs/geoxform/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/koopjs/geoxform/compare/v1.0.3...v1.0.4
