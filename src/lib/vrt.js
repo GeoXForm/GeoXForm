@@ -28,12 +28,15 @@ function createStream (options) {
         })
         push(null, '<OGRVRTDataSource>')
         first = false
+        let properties
         try {
-          output.emit('properties', sample(batch))
+          properties = sample(batch)
         } catch (e) {
+          output.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
           output.emit('error', e)
           return output.destroy()
         }
+        output.emit('properties', properties)
       }
       const fileName = `${options.path}/part.${index}.json`
       push(null, addMetadata(fileName))
@@ -62,7 +65,7 @@ function filter (string) {
   // strip off characters if this is the first geojson feature
   const parts = string.split('"features":[{')
   // handle the case where this is the last
-  return `{${parts[parts.length - 1]}`.replace(/]}}]}/, ']}}')
+  return `{${parts[parts.length - 1]}`.replace(/^\{\s?\{/, '{').replace(/]\s?}\s?}\s?]\s?}/, ']}}')
 }
 
 function addMetadata (fileName) {

@@ -36,7 +36,6 @@ function createStream (format, options) {
 function cleanup (stream, path) {
   rimraf(path, err => {
     if (err) stream.emit('log', {level: 'error', message: 'Failed to delete temporary directory'})
-    stream.emit('end')
     stream.destroy()
   })
 }

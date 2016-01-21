@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Fixed
+* Handle case where first geojson feature does not have featureCollection tag
+* Handle edge cases where geojson has spaces in the tags
+
 ## [1.0.7] - 2016-01-12
 ### Changed
 * `GeoXForm.createStream` will emit an error when OGR does

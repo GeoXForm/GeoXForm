@@ -2,7 +2,6 @@
 const _ = require('highland')
 const GeoJson = require('../src/lib/geojson')
 const test = require('tape')
-const rimraf = require('rimraf')
 const fs = require('fs')
 const Helper = require('./helper')
 
