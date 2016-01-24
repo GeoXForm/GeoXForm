@@ -20,12 +20,11 @@ function createStream (options) {
     .batch(size)
     .consume((err, batch, push, next) => {
       if (err) push(err)
-      if (batch === _.nil) return
+      if (batch === _.nil) {
+        if (watcher.idle) return finish(push)
+        else return watcher.on('idle', () => finish(push))
+      }
       if (first) {
-        watcher.on('finish', () => {
-          push(null, '</OGRVRTDataSource>')
-          return push(null, _.nil)
-        })
         push(null, '<OGRVRTDataSource>')
         first = false
         let properties
@@ -47,6 +46,11 @@ function createStream (options) {
     })
   })
   return output
+}
+
+function finish (push) {
+  push(null, '</OGRVRTDataSource>')
+  push(null, _.nil)
 }
 
 function sample (batch) {
@@ -92,7 +96,10 @@ Watcher.prototype.watch = function (writer) {
   writer.on('finish', () => {
     this.writers[index] = true
     // this will emit finish when all the outstanding writers come back
-    if (this.writers.indexOf(false) < 0) this.emit('finish')
+    if (this.writers.indexOf(false) < 0) {
+      this.idle = true
+      this.emit('idle')
+    }
   })
 }
 
