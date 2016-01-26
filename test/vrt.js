@@ -19,7 +19,6 @@ test('write a vrt', t => {
   const vrtPath = `${output}/layer.vrt`
   fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
   .pipe(Vrt.createStream({ path: output, size: 33 }))
-  .pipe(fs.createWriteStream(vrtPath))
   .on('finish', () => {
     [0, 1, 2, 3].forEach(n => {
       const file = fs.readFileSync(`${output}/part.${n}.json`)
@@ -39,13 +38,12 @@ test('write a vrt using input from GeoJSON.createStream', t => {
   t.plan(6)
   fs.mkdirSync(`${output}/vrt2`)
   const outPath = `${output}/vrt2`
-  const vrtPath = `${outPath}layer.vrt`
+  const vrtPath = `${outPath}/layer.vrt`
   _(fs.createReadStream(`${__dirname}/fixtures/features.txt`))
   .split()
   .compact()
   .pipe(GeoJSON.createStream())
   .pipe(Vrt.createStream({ path: outPath, size: 33 }))
-  .pipe(fs.createWriteStream(vrtPath))
   .on('finish', () => {
     [0, 1, 2, 3].forEach(n => {
       const file = fs.readFileSync(`${outPath}/part.${n}.json`)
@@ -62,14 +60,14 @@ test('write a vrt using input from GeoJSON.createStream', t => {
 })
 
 test('fail gracefully when geojson input is bad', t => {
-  t.plan(1)
-  const vrtPath = `${output}/layer.vrt`
-  _([{}])
-  .pipe(Vrt.createStream({ path: output, size: 33 }))
-  .on('error', e => {
+  const vrtStream = Vrt.createStream({ path: output, size: 33 })
+  vrtStream.on('error', e => {
     t.ok(e, 'Error emitted in expected place')
   })
-  .pipe(fs.createWriteStream(vrtPath))
+  t.plan(1)
+  _([{}])
+  .pipe(vrtStream)
+  .on('finish', () => t.fail('Should not have finished'))
 })
 
 test('Teardown', t => {

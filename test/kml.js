@@ -1,3 +1,4 @@
+'use strict'
 const test = require('tape')
 const Ogr = require('../src/lib/ogr.js')
 const Helper = require('./helper')
@@ -10,22 +11,21 @@ test('Set up', t => {
 test('Create a kml readstream', t => {
   t.plan(1)
   const options = defaultOptions()
-  const rows = []
-  Helper.vrt()
-  .pipe(Ogr.createStream('kml', options))
+  let rows = 0
+  Ogr.createStream('kml', options)
   .on('error', e => { console.log(e); t.end(e) })
   .splitBy('<Placemark>')
   .compact()
-  .each(row => rows.push(row))
-  .done(() => t.equal(rows.length, 101, 'All rows written to the stream'))
+  .each(row => rows++)
+  .done(() => t.equal(rows, 101, 'All rows written to the stream'))
 })
 
 test('Gracefully handle a malformed VRT', t => {
   t.plan(1)
   const options = defaultOptions()
+  options.input = Helper.malformedVrt
   try {
-    Helper.malformedVrt()
-    .pipe(Ogr.createStream('kml', options))
+    Ogr.createStream('kml', options)
     .on('error', err => {
       t.ok(err, 'Error was caught in the correct place')
       t.end()
@@ -45,6 +45,7 @@ function defaultOptions () {
   return {
     path: `${__dirname}/output`,
     name: 'dummy',
-    geometry: 'Point'
+    geometry: 'Point',
+    input: Helper.testPath
   }
 }

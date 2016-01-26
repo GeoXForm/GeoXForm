@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* Refactor VRT internals
+
 ## [1.0.9] - 2016-01-23
 ### Fixed
 * Better fix for `lib/vrt` race condition

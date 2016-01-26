@@ -1,3 +1,4 @@
+'use strict'
 const test = require('tape')
 const Ogr = require('../src/lib/ogr.js')
 const Helper = require('./helper')
@@ -10,28 +11,25 @@ test('Set up', t => {
 test('Create a csv readstream', t => {
   t.plan(1)
   const options = defaultOptions()
-  const rows = []
-  Helper.vrt()
-  .pipe(Ogr.createStream('csv', options))
+  let rows = 0
+  Ogr.createStream('csv', options)
   .on('error', e => {
     console.log(e); t.end(e)
   })
   .split()
   .compact()
-  .each(row => {
-    rows.push(row)
-  })
+  .each(row => rows++)
   .done(() => {
-    t.equal(rows.length, 101, 'All rows written to the stream')
+    t.equal(rows, 101, 'All rows written to the stream')
   })
 })
 
 test('Gracefully handle a malformed VRT', t => {
   t.plan(1)
   const options = defaultOptions()
+  options.input = Helper.malformedVrt
   try {
-    Helper.malformedVrt()
-    .pipe(Ogr.createStream('csv', options))
+    Ogr.createStream('csv', options)
     .on('error', err => {
       t.ok(err, 'Error was caught in the correct place')
       t.end()
@@ -52,6 +50,7 @@ function defaultOptions () {
     path: `${__dirname}/output`,
     name: 'dummy',
     geometry: 'Point',
-    fields: ['foo', 'bar', 'baz']
+    fields: ['foo', 'bar', 'baz'],
+    input: Helper.testPath
   }
 }

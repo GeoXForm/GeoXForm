@@ -9,48 +9,42 @@ const lodash = require('lodash')
 
 function createStream (options) {
   const size = options.size || 5000
-
-  const output = _.pipeline(stream => {
-    const watcher = new Watcher()
-    let first = true
-    let index = 0
-    return stream
-    .splitBy(',{')
-    .map(filter)
-    .batch(size)
-    .consume((err, batch, push, next) => {
-      if (err) push(err)
-      if (batch === _.nil) {
-        if (watcher.idle) return finish(push)
-        else return watcher.on('idle', () => finish(push))
+  const watcher = new Watcher()
+  const vrtPath = `${options.path}/layer.vrt`
+  const vrt = fs.createWriteStream(vrtPath)
+  vrt.write('<OGRVRTDataSource>')
+  let index = 0
+  let first = true
+  const input = _()
+  input
+  .splitBy(',{')
+  .map(filter)
+  .batch(size)
+  .each(batch => {
+    if (first) {
+      first = false
+      let properties
+      try {
+        properties = sample(batch)
+      } catch (e) {
+        input.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
+        input.emit('error', e)
+        return input.destroy()
       }
-      if (first) {
-        push(null, '<OGRVRTDataSource>')
-        first = false
-        let properties
-        try {
-          properties = sample(batch)
-        } catch (e) {
-          output.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
-          output.emit('error', e)
-          return output.destroy()
-        }
-        output.emit('properties', properties)
-      }
-      const fileName = `${options.path}/part.${index}.json`
-      push(null, addMetadata(fileName))
-      const writer = writeLayer(batch, fileName)
-      watcher.watch(writer)
-      index++
-      next()
-    })
+      input.emit('properties', properties)
+    }
+    const fileName = `${options.path}/part.${index}.json`
+    const writer = writeLayer(batch, fileName)
+    watcher.watch(writer)
+    vrt.write(metadata(fileName))
+    index++
   })
-  return output
-}
-
-function finish (push) {
-  push(null, '</OGRVRTDataSource>')
-  push(null, _.nil)
+  .done(() => {
+    vrt.write('</OGRVRTDataSource>')
+    if (watcher.idle) input.emit('finish', vrtPath)
+    else watcher.on('idle', () => input.emit('finish', vrtPath))
+  })
+  return input
 }
 
 function sample (batch) {
@@ -72,7 +66,7 @@ function filter (string) {
   return `{${parts[parts.length - 1]}`.replace(/^\{\s?\{/, '{').replace(/]\s?}\s?}\s?]\s?}/, ']}}')
 }
 
-function addMetadata (fileName) {
+function metadata (fileName) {
   return `<OGRVRTLayer name="OGRGeoJSON"><SrcDataSource>${fileName}</SrcDataSource></OGRVRTLayer>`
 }
 
