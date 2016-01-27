@@ -9,7 +9,7 @@ const mkdirp = require('mkdirp')
 
 function createStream (format, options) {
   options = options || {}
-  options.path = `${options.path || '.'}/${random.generate()}`
+  options.path = `${options.tempPath || '.'}/${random.generate()}`
   mkdirp.sync(options.path)
   const output = _.pipeline(stream => {
     // init VRT stream and attach listeners otherwise the error event will be missed
