@@ -6,7 +6,7 @@ const _ = require('highland')
 const EventEmitter = require('events').EventEmitter
 const util = require('util')
 const lodash = require('lodash')
-const JSONStream = require('jsonStream')
+const JSONStream = require('JSONStream')
 
 function createStream (options) {
   const size = options.size || 5000
