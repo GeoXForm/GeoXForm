@@ -4,8 +4,8 @@
   "description": "A library for transforming large streams of geojson into csv, kml, shapefile and other formats",
   "main": "index.js",
   "dependencies": {
+    "JSONStream": "^1.0.7",
     "highland": "^2.6.0",
-    "jsonstream": "^1.0.3",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "package": "^1.0.1",
