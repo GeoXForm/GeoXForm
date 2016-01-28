@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "highland": "^2.6.0",
+    "jsonstream": "^1.0.3",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "package": "^1.0.1",

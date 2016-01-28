@@ -34,6 +34,30 @@ test('write a vrt', t => {
   })
 })
 
+test('write a vrt from geojson that has a newline after the opening tags', t => {
+  t.plan(6)
+  const vrtPath = `${output}/layer.vrt`
+  fs.createReadStream(`${__dirname}/fixtures/legacyFc.geojson`)
+  .pipe(Vrt.createStream({ path: output, size: 33 }))
+  .on('error', e => {
+    t.fail('Failed while writing VRT')
+    t.end()
+  })
+  .on('finish', () => {
+    [0, 1, 2, 3].forEach(n => {
+      const file = fs.readFileSync(`${output}/part.${n}.json`)
+      try {
+        JSON.parse(file)
+        t.pass(`JSON part ${n + 1} of 4 parsed successfully`)
+      } catch (e) {
+        t.fail(`JSON part ${n + 1} of 4 could not be parsed`)
+      }
+    })
+    t.ok(fs.statSync(vrtPath), 'VRT written')
+    t.equal(fs.readFileSync(vrtPath).toString().length > 0, true, 'VRT has content')
+  })
+})
+
 test('write a vrt using input from GeoJSON.createStream', t => {
   t.plan(6)
   fs.mkdirSync(`${output}/vrt2`)
@@ -60,13 +84,12 @@ test('write a vrt using input from GeoJSON.createStream', t => {
 })
 
 test('fail gracefully when geojson input is bad', t => {
-  const vrtStream = Vrt.createStream({ path: output, size: 33 })
-  vrtStream.on('error', e => {
+  t.plan(3)
+  fs.createReadStream(`${__dirname}/fixtures/bad.txt`)
+  .pipe(Vrt.createStream({ path: output, size: 33 }))
+  .on('error', e => {
     t.ok(e, 'Error emitted in expected place')
   })
-  t.plan(1)
-  _([{}])
-  .pipe(vrtStream)
   .on('finish', () => t.fail('Should not have finished'))
 })
 

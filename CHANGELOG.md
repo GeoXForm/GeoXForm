@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* JSON parsing is much less fragile
+
 ## [1.0.10] - 2016-01-26
 ### Changed
 * Refactor VRT internals

@@ -6,6 +6,7 @@ const _ = require('highland')
 const EventEmitter = require('events').EventEmitter
 const util = require('util')
 const lodash = require('lodash')
+const JSONStream = require('jsonStream')
 
 function createStream (options) {
   const size = options.size || 5000
@@ -17,8 +18,12 @@ function createStream (options) {
   let first = true
   const input = _()
   input
-  .splitBy(',{')
-  .map(filter)
+  .pipe(JSONStream.parse('features.*'))
+  .on('error', e => {
+    input.emit('error', e)
+    input.destroy()
+  })
+  .pipe(_())
   .batch(size)
   .each(batch => {
     if (first) {
@@ -39,6 +44,7 @@ function createStream (options) {
     vrt.write(metadata(fileName))
     index++
   })
+
   .done(() => {
     vrt.write('</OGRVRTDataSource>')
     if (watcher.idle) input.emit('finish', vrtPath)
@@ -48,22 +54,14 @@ function createStream (options) {
 }
 
 function sample (batch) {
-  let sample = lodash.find(f => {
-    const feature = JSON.parse(f)
+  let sample = lodash.find(feature => {
     if (feature.geometry && feature.geometry.type) return true
     else return false
   })
-  sample = JSON.parse(sample || batch[0])
+  sample = sample || batch[0]
   const geometry = sample.geometry ? sample.geometry.type : 'NONE'
   const fields = Object.keys(sample.properties)
   return {geometry, fields}
-}
-
-function filter (string) {
-  // strip off characters if this is the first geojson feature
-  const parts = string.split('"features":[{')
-  // handle the case where this is the last
-  return `{${parts[parts.length - 1]}`.replace(/^\{\s?\{/, '{').replace(/]\s?}\s?}\s?]\s?}/, ']}}')
 }
 
 function metadata (fileName) {
@@ -73,7 +71,7 @@ function metadata (fileName) {
 function writeLayer (batch, fileName) {
   const fileStream = fs.createWriteStream(fileName)
   return _(batch)
-  .pipe(Geojson.createStream())
+  .pipe(Geojson.createStream({json: true}))
   .pipe(fileStream)
 }
 
