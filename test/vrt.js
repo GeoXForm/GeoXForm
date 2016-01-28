@@ -84,7 +84,7 @@ test('write a vrt using input from GeoJSON.createStream', t => {
 })
 
 test('fail gracefully when geojson input is bad', t => {
-  t.plan(3)
+  t.plan(1)
   fs.createReadStream(`${__dirname}/fixtures/bad.txt`)
   .pipe(Vrt.createStream({ path: output, size: 33 }))
   .on('error', e => {
