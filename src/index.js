@@ -9,16 +9,19 @@ const mkdirp = require('mkdirp')
 
 function createStream (format, options) {
   options = options || {}
-  options.path = `${options.path || '.'}/${random.generate()}`
+  options.path = `${options.tempPath || '.'}/${random.generate()}`
   mkdirp.sync(options.path)
   const output = _.pipeline(stream => {
     // init VRT stream and attach listeners otherwise the error event will be missed
     const through = _()
     const vrtStream = VRT.createStream(options)
     .on('log', l => output.emit('log', l))
-    .on('error', e => {
+    .once('error', e => {
       output.emit('error', e)
       cleanup(output, options.path)
+    })
+    .on('error', e => {
+      output.emit('log', {level: 'error', message: e})
     })
     .on('properties', p => Object.assign(options, p))
 
@@ -27,9 +30,12 @@ function createStream (format, options) {
     .on('finish', () => {
       OGR.createStream(format, options)
       .on('log', l => output.emit('log', l))
-      .on('error', e => {
+      .once('error', e => {
         output.emit('error', e)
         cleanup(output, options.path)
+      })
+      .on('error', e => {
+        output.emit('log', {level: 'error', message: e})
       })
       .on('end', () => {
         cleanup(output, options.path)
