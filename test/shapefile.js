@@ -1,5 +1,4 @@
 /* global __dirname */
-// const _ = require('highland')
 const AdmZip = require('adm-zip')
 const fs = require('fs')
 const test = require('tape')

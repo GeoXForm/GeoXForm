@@ -75,6 +75,7 @@ test('write a vrt using input from GeoJSON.createStream', t => {
         JSON.parse(file)
         t.pass(`JSON part ${n + 1} of 4 parsed successfully`)
       } catch (e) {
+        console.log(file.toString(), `${outPath}/part.${n}.json`)
         t.fail(`JSON part ${n + 1} of 4 could not be parsed`)
       }
     })

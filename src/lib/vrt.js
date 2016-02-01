@@ -6,7 +6,7 @@ const _ = require('highland')
 const EventEmitter = require('events').EventEmitter
 const util = require('util')
 const lodash = require('lodash')
-const JSONStream = require('JSONStream')
+const FeatureParser = require('feature-parser')
 
 function createStream (options) {
   const size = options.size || 5000
@@ -15,19 +15,14 @@ function createStream (options) {
   const vrt = fs.createWriteStream(vrtPath)
   vrt.write('<OGRVRTDataSource>')
   let index = 0
-  let first = true
+  let firstBatch = true
   const input = _()
   input
-  .pipe(JSONStream.parse('features.*'))
-  .on('error', e => {
-    input.emit('error', e)
-    input.destroy()
-  })
-  .pipe(_())
+  .pipe(FeatureParser.parse())
   .batch(size)
   .each(batch => {
-    if (first) {
-      first = false
+    if (firstBatch) {
+      firstBatch = false
       let properties
       try {
         properties = sample(batch)
@@ -44,7 +39,6 @@ function createStream (options) {
     vrt.write(metadata(fileName))
     index++
   })
-
   .done(() => {
     vrt.write('</OGRVRTDataSource>')
     if (watcher.idle) input.emit('finish', vrtPath)
@@ -54,11 +48,12 @@ function createStream (options) {
 }
 
 function sample (batch) {
-  let sample = lodash.find(feature => {
+  let sample = lodash.find(string => {
+    const feature = JSON.parse(string)
     if (feature.geometry && feature.geometry.type) return true
     else return false
   })
-  sample = sample || batch[0]
+  sample = JSON.parse(sample || batch[0])
   const geometry = sample.geometry ? sample.geometry.type : 'NONE'
   const fields = Object.keys(sample.properties)
   return {geometry, fields}
@@ -71,7 +66,7 @@ function metadata (fileName) {
 function writeLayer (batch, fileName) {
   const fileStream = fs.createWriteStream(fileName)
   return _(batch)
-  .pipe(Geojson.createStream({json: true}))
+  .pipe(Geojson.createStream())
   .pipe(fileStream)
 }
 
@@ -83,6 +78,7 @@ function Watcher () {
 util.inherits(Watcher, EventEmitter)
 
 Watcher.prototype.watch = function (writer) {
+  this.idle = false
   this.writers.push(false)
   const index = this.writers.length - 1
   writer.on('finish', () => {
