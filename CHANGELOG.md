@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [1.0.15] - 2016-02-01
 ### Changed
 * Extract geojson feature parsing into [Feature Parser](https://github.com/dmfenton/feature-parser)
 * Use Highland 3.0 branch for more performant pipelines
@@ -83,7 +83,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * Initial release: API supports creating VRTs, Geojson, shapefile, kml and csv
 
-[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.14...HEAD
+[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.0.15...HEAD
+[1.0.15]: https://github.com/koopjs/geoxform/compare/v1.0.14...v1.0.15
 [1.0.14]: https://github.com/koopjs/geoxform/compare/v1.0.13...v1.0.14
 [1.0.13]: https://github.com/koopjs/geoxform/compare/v1.0.12...v1.0.13
 [1.0.12]: https://github.com/koopjs/geoxform/compare/v1.0.11...v1.0.12
