@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Added
+* SIGTERM will cause OGR and ZIP to exit
+
 ## [1.0.15] - 2016-02-01
 ### Changed
 * Extract geojson feature parsing into [Feature Parser](https://github.com/dmfenton/feature-parser)

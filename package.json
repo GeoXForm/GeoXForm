@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "feature-parser": "^1.0.1",
-    "highland": "https://github.com/caolan/highland.git#0c6dcea9e702080a8728976839c0551b4b38c7c9",
+    "highland": "3.0.0-beta.1",
     "lodash": "^3.10.1",
     "mkdirp": "^0.5.1",
     "package": "^1.0.1",

@@ -34,6 +34,7 @@ function spawnOgr (format, options) {
     // Error 6: debug message that can be ignored
     if (msg.match(/ERROR\s[^6]/)) output.emit('error', new Error(msg))
   })
+  process.on('SIGTERM', () => ogr.kill())
   return ogr.stdout.pipe(output)
 }
 
