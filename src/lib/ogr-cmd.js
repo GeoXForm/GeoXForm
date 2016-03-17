@@ -47,7 +47,8 @@ function csvParams (cmd, options) {
  */
 function shapefileParams (cmd, options) {
   // make sure geometries are still written even if the first is null
-  cmd.push(`-nlt ${options.geometry.toUpperCase()}`)
+  cmd.push('-nlt')
+  cmd.push(options.geometry.toUpperCase())
   cmd.push('-fieldmap')
   cmd.push('identity')
   if (options.srs) cmd.push(`-t_srs '${options.srs}'`)
@@ -69,7 +70,7 @@ function finishOgrParams (cmd) {
 
 const ogrFormats = {
   kml: 'KML',
-  zip: '"ESRI Shapefile"',
+  zip: 'ESRI Shapefile',
   csv: 'CSV',
   json: 'GeoJSON',
   geojson: 'GeoJSON',

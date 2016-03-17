@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * SIGTERM will cause OGR and ZIP to exit
 
+### Changed
+* Shapefile will fail when OGR emits errors
+
 ## [1.0.15] - 2016-02-01
 ### Changed
 * Extract geojson feature parsing into [Feature Parser](https://github.com/dmfenton/feature-parser)

@@ -3,21 +3,35 @@
 const _ = require('highland')
 const fs = require('fs')
 const path = require('path')
-const exec = require('child_process').exec
+const child = require('child_process')
+const spawn = child.spawn
+const exec = child.exec
 const Cmd = require('./ogr-cmd')
 
 function createStream (options) {
+  let lastMessage
   const readStream = _()
-  const cmd = `ogr2ogr ${Cmd.create('zip', options).join(' ')}`
-  const ogr = exec(cmd, err => {
-    if (err) return readStream.emit('error', new Error('Call to OGR failed'))
-    const folder = `${options.path}/${options.name}`
-    if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
-    createZipStream(folder)
-    .on('error', e => readStream.emit('error', e))
-    .pipe(readStream)
+  const cmd = Cmd.create('zip', options)
+  const ogr = spawn('ogr2ogr', cmd)
+  .on('close', c => {
+    if (c > 0) readStream.emit('error', new Error(`OGR Failed: ${lastMessage}`))
+    else {
+      const folder = `${options.path}/${options.name}`
+      if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
+      createZipStream(folder)
+      .on('error', e => readStream.emit('error', e))
+      .pipe(readStream)
+    }
   })
-  process.on('SIGTERM', () => ogr.kill())
+  ogr.stderr.on('data', data => {
+    const msg = data.toString()
+    lastMessage = msg
+    readStream.emit('log', {level: 'error', message: msg})
+    if (msg.match(/ERROR\s[^6]/)) {
+      readStream.emit('error', new Error(msg))
+      ogr.kill()
+    }
+  })
   return readStream
 }
 
