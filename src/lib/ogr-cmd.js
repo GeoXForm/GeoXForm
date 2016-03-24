@@ -28,8 +28,7 @@ function create (format, options) {
  * @private
  */
 function csvParams (cmd, options) {
-  cmd.push('-lco')
-  cmd.push('WRITE_BOM=YES')
+  cmd.push('-lco', 'WRITE_BOM=YES')
   const hasPointGeom = options.geometry === 'POINT'
   const fields = options.fields.join('|').toLowerCase().split('|')
   const hasXY = fields.indexOf('x') > -1 && fields.indexOf('y') > -1
@@ -47,11 +46,9 @@ function csvParams (cmd, options) {
  */
 function shapefileParams (cmd, options) {
   // make sure geometries are still written even if the first is null
-  cmd.push('-nlt')
-  cmd.push(options.geometry.toUpperCase())
-  cmd.push('-fieldmap')
-  cmd.push('identity')
-  if (options.srs) cmd.push(`-t_srs '${options.srs}'`)
+  cmd.push('-nlt', options.geometry.toUpperCase())
+  cmd.push('-fieldmap', 'identity')
+  if (options.srs) cmd.push('-t_srs', options.srs)
   return cmd
 }
 
@@ -63,8 +60,7 @@ function shapefileParams (cmd, options) {
 function finishOgrParams (cmd) {
   cmd.push('-append')
   cmd.push('-skipfailures')
-  cmd.push('-lco')
-  cmd.push('ENCODING=UTF-8')
+  cmd.push('-lco', 'ENCODING=UTF-8')
   return cmd
 }
 

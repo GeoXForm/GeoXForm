@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Shapefile SRS transformations complete sucessfully
+
 ## [1.1.1] - 2016-03-20
 ### Changed
 * Remove unused package
