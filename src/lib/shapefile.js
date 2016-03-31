@@ -43,7 +43,6 @@ function createZipStream (input) {
     if (err) return zipStream.emit('error', new Error('Failed while zipping'))
     fs.createReadStream(`${input}.zip`).pipe(zipStream)
   })
-  process.on('SIGTERM', () => zip.kill())
   return zipStream
 }
 
