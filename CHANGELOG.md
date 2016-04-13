@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* Respect 2GB shapefile dbf limit unless `options.ignoreShpLimit === true`
+
+### Fixed
+* Clean up failure handling on shapefiles
+
 ## [1.1.3] - 2016-03-30
 ### Fixed
 * Removed potential sigterm listener leak

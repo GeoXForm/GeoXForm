@@ -27,13 +27,22 @@ function spawnOgr (format, options) {
   .on('close', c => {
     if (c > 0) output.emit('error', new Error('OGR Failed'))
   })
-  ogr.stderr.on('data', data => {
+
+  ogr.stderr.on('data', listen)
+
+  function listen (data) {
     const msg = data.toString()
     // Error 1: GeoJSON parsing error
     // Error 4: Failed to read GeeoJSON
     // Error 6: debug message that can be ignored
-    if (msg.match(/ERROR\s[^6]/)) output.emit('error', new Error(msg))
-  })
+    if (msg.match(/ERROR\s[^6]/)) {
+      output.emit('error', new Error(msg))
+      ogr.stderr.removeListener('data', listen)
+      process.kill(ogr.pid, 'SIGKILL')
+      output.destroy()
+    }
+  }
+
   return ogr.stdout.pipe(output)
 }
 
