@@ -47,7 +47,7 @@ test('Create a command for a shapefile', t => {
   }
 
   const cmd = Cmd.create('zip', options)
-  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f ESRI Shapefile ./dummy layer.vrt -nlt POINT -fieldmap identity -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
+  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f ESRI Shapefile ./dummy layer.vrt -nlt POINT -fieldmap identity -lco 2GB_LIMIT=yes -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
 })
 
 test('Create the command for a shapefile when a srs is passed in', t => {
@@ -59,5 +59,5 @@ test('Create the command for a shapefile when a srs is passed in', t => {
   }
 
   const cmd = Cmd.create('zip', options)
-  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f ESRI Shapefile ./dummy layer.vrt -nlt POINT -fieldmap identity -t_srs PROJECTION -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
+  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f ESRI Shapefile ./dummy layer.vrt -nlt POINT -fieldmap identity -lco 2GB_LIMIT=yes -t_srs PROJECTION -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
 })
