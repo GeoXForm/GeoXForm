@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Catch messages coming off ogr stderr
+
 ## [1.1.4] - 2016-04-15
 ### Changed
 * Respect 2GB shapefile dbf limit unless `options.ignoreShpLimit === true`

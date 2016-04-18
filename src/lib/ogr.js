@@ -20,28 +20,29 @@ function createStream (format, options) {
 }
 
 function spawnOgr (format, options) {
+  let lastMessage
   const output = _()
   const cmd = Cmd.create(format, options)
   output.emit('log', {level: 'info', message: `Executing: OGR2OGR ${cmd.join(' ')}`})
   const ogr = spawn('ogr2ogr', cmd)
   .on('close', c => {
-    if (c > 0) output.emit('error', new Error('OGR Failed'))
+    if (c > 0) output.emit('error', new Error(`OGR Failed: ${lastMessage}`))
   })
 
-  ogr.stderr.on('data', listen)
-
-  function listen (data) {
+  _(ogr.stderr)
+  .each(data => {
     const msg = data.toString()
     // Error 1: GeoJSON parsing error
     // Error 4: Failed to read GeeoJSON
     // Error 6: debug message that can be ignored
+    lastMessage = msg
+    output.emit('log', {level: 'error', message: msg})
     if (msg.match(/ERROR\s[^6]/)) {
-      output.emit('error', new Error(msg))
-      ogr.stderr.removeListener('data', listen)
-      process.kill(ogr.pid, 'SIGKILL')
-      output.destroy()
+      ogr.stderr.unpipe()
+      ogr.kill('SIGKILL')
+      ogr.emit('close', 1)
     }
-  }
+  })
 
   return ogr.stdout.pipe(output)
 }

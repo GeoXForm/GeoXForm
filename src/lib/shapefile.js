@@ -10,13 +10,14 @@ const Cmd = require('./ogr-cmd')
 
 function createStream (options) {
   let lastMessage
-  let failed
   const readStream = _()
   const cmd = Cmd.create('zip', options)
   const ogr = spawn('ogr2ogr', cmd)
   .on('close', c => {
-    if (c > 0 || failed) readStream.emit('error', new Error(`OGR Failed: ${lastMessage}`))
-    else {
+    if (c > 0) {
+      readStream.emit('error', new Error(`OGR Failed: ${lastMessage}`))
+      readStream.destroy()
+    } else {
       const folder = `${options.path}/${options.name}`
       if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
       createZipStream(folder)
@@ -24,17 +25,19 @@ function createStream (options) {
       .pipe(readStream)
     }
   })
-  ogr.stderr.on('data', listen)
-  function listen (data) {
+
+  _(ogr.stderr)
+  .each(data => {
     const msg = data.toString()
     lastMessage = msg
     readStream.emit('log', {level: 'error', message: msg})
-    if (msg.match(/ERROR\s[^16]/)) {
-      failed = true
-      readStream.destroy()
-      process.kill(ogr.pid, 'SIGKILL')
+    if (msg.match(/ERROR\s[^16]/) || msg.match(/2GB file size limit reached/)) {
+      ogr.stderr.unpipe()
+      ogr.kill('SIGKILL')
+      ogr.emit('close', 1)
     }
-  }
+  })
+
   return readStream
 }
 
