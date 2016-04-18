@@ -34,12 +34,8 @@ function createStream (format, options) {
         output.emit('error', e)
         cleanup(output, options.path)
       })
-      .on('error', e => {
-        output.emit('log', {level: 'error', message: e})
-      })
-      .on('end', () => {
-        cleanup(output, options.path)
-      })
+      .on('error', e => output.emit('log', { level: 'error', message: e }))
+      .on('end', () => cleanup(output, options.path))
       .pipe(through)
     })
 
