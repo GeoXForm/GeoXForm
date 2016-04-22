@@ -9,13 +9,12 @@ const exec = child.exec
 const Cmd = require('./ogr-cmd')
 
 function createStream (options) {
-  let lastMessage
   const readStream = _()
   const cmd = Cmd.create('zip', options)
   const ogr = spawn('ogr2ogr', cmd)
-  .on('close', c => {
+  .on('close', (c, msg) => {
     if (c > 0) {
-      readStream.emit('error', new Error(`OGR Failed: ${lastMessage}`))
+      readStream.emit('error', new Error(`OGR Failed: ${msg}`))
       readStream.destroy()
     } else {
       const folder = `${options.path}/${options.name}`
@@ -27,16 +26,22 @@ function createStream (options) {
   })
 
   _(ogr.stderr)
+  .split()
   .each(data => {
     const msg = data.toString()
-    lastMessage = msg
-    readStream.emit('log', {level: 'error', message: msg})
     if (msg.match(/ERROR\s[^16]/) || msg.match(/2GB file size limit reached/)) {
+      readStream.emit('log', { level: 'error', msg: msg })
       ogr.stderr.unpipe()
       ogr.kill('SIGKILL')
-      ogr.emit('close', 1)
+      ogr.emit('close', 1, msg)
     }
   })
+
+  readStream.abort = () => {
+    ogr.stderr.unpipe()
+    ogr.kill('SIGKILL')
+    ogr.emit('close', 1, 'Aborted')
+  }
 
   return readStream
 }
@@ -45,7 +50,7 @@ function createZipStream (input) {
   const zipStream = _()
   const cmd = ['zip', '-rj', `"${input}.zip"`, `"${input}"`, '--exclude=*.json*', '--exclude=*.vrt']
   renameFiles(input)
-  const zip = exec(cmd.join(' '), (err, stdout, stderr) => {
+  exec(cmd.join(' '), (err, stdout, stderr) => {
     if (err) return zipStream.emit('error', new Error('Failed while zipping'))
     fs.createReadStream(`${input}.zip`).pipe(zipStream)
   })

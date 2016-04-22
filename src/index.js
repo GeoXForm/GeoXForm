@@ -8,6 +8,7 @@ const _ = require('highland')
 const mkdirp = require('mkdirp')
 
 function createStream (format, options) {
+  let ogr
   options = options || {}
   options.path = `${options.tempPath || '.'}/${random.generate()}`
   mkdirp.sync(options.path)
@@ -28,7 +29,9 @@ function createStream (format, options) {
     stream
     .pipe(vrtStream)
     .on('finish', () => {
-      OGR.createStream(format, options)
+      ogr = OGR.createStream(format, options)
+
+      ogr
       .on('log', l => output.emit('log', l))
       .once('error', e => {
         output.emit('error', e)
@@ -42,14 +45,18 @@ function createStream (format, options) {
     return through
   })
 
+  output.abort = () => {
+    ogr.abort()
+    cleanup(output, options.path)
+  }
+
   return output
 }
 
 function cleanup (stream, path) {
   rimraf(path, err => {
     if (err) stream.emit('log', {level: 'error', message: 'Failed to delete temporary directory'})
-    stream.emit('end')
-    stream.destroy()
+    stream.end()
   })
 }
 

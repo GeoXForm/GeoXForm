@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Added
+* `stream.abort()` will kill ogr and cleanup temp files
+
 ## [1.1.5] - 2016-04-18
 ### Fixed
 * Catch messages coming off ogr stderr
