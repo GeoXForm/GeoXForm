@@ -1,6 +1,6 @@
 {
   "name": "geo-xform",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A library for transforming large streams of geojson into csv, kml, shapefile and other formats",
   "main": "index.js",
   "dependencies": {
