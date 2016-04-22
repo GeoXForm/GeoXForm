@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * `stream.abort()` will kill ogr and cleanup temp files
 
+### Fixed
+* Listen to exit and error events on the `ogr` child process
+
 ## [1.1.5] - 2016-04-18
 ### Fixed
 * Catch messages coming off ogr stderr

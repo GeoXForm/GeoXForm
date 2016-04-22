@@ -9,14 +9,25 @@ const exec = child.exec
 const Cmd = require('./ogr-cmd')
 
 function createStream (options) {
+  let lastMessage
   const readStream = _()
   const cmd = Cmd.create('zip', options)
   const ogr = spawn('ogr2ogr', cmd)
-  .on('close', (c, msg) => {
-    if (c > 0) {
-      readStream.emit('error', new Error(`OGR Failed: ${msg}`))
+  .on('error', e => {
+    ogr.stderr.unpipe()
+    ogr.kill('SIGKILL')
+    readStream.emit('error', e)
+  })
+  // handler for when OGR exits
+  .on('exit', (code, signal) => {
+    if (code !== 0 || signal === 'SIGKILL') {
+      readStream.emit('error', new Error(`OGR Failed ${lastMessage}`))
       readStream.destroy()
-    } else {
+    }
+  })
+  // handler for the STDIO stream closure
+  .on('close', (c) => {
+    if (c === 0) {
       const folder = `${options.path}/${options.name}`
       if (options.metadata) fs.writeFileSync(`${folder}/${options.name}.xml`, options.metadata)
       createZipStream(folder)
@@ -29,18 +40,18 @@ function createStream (options) {
   .split()
   .each(data => {
     const msg = data.toString()
+    lastMessage = msg
     if (msg.match(/ERROR\s[^16]/) || msg.match(/2GB file size limit reached/)) {
       readStream.emit('log', { level: 'error', msg: msg })
       ogr.stderr.unpipe()
       ogr.kill('SIGKILL')
-      ogr.emit('close', 1, msg)
     }
   })
 
   readStream.abort = () => {
     ogr.stderr.unpipe()
     ogr.kill('SIGKILL')
-    ogr.emit('close', 1, 'Aborted')
+    lastMessage = 'ABORTED'
   }
 
   return readStream
