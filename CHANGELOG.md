@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* Be less verbose with logging debug messages
+
 ## [1.2.0] - 2016-04-22
 ### Added
 * `stream.abort()` will kill ogr and cleanup temp files

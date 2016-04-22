@@ -40,8 +40,8 @@ function spawnOgr (format, options) {
     // Error 1: GeoJSON parsing error
     // Error 4: Failed to read GeeoJSON
     // Error 6: debug message that can be ignored
-    output.emit('log', {level: 'error', message: msg})
     if (msg.match(/ERROR\s[^6]/)) {
+      output.emit('log', {level: 'error', message: msg})
       ogr.stderr.unpipe()
       ogr.kill('SIGKILL')
     }
