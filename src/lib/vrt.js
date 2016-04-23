@@ -40,7 +40,7 @@ function createStream (options) {
     index++
   })
   .done(() => {
-    vrt.write('</OGRVRTDataSource>')
+    vrt.end('</OGRVRTDataSource>')
     if (watcher.idle) input.emit('finish', vrtPath)
     else watcher.on('idle', () => input.emit('finish', vrtPath))
   })

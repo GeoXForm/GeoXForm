@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Eliminated file descriptor leak
+
 ## [1.2.1] - 2016-04-22
 ### Changed
 * Be less verbose with logging debug messages
