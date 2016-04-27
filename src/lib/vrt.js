@@ -19,6 +19,7 @@ function createStream (options) {
   const input = _()
   input
   .pipe(FeatureParser.parse())
+  .stopOnError(e => input.emit('error', e))
   .batch(size)
   .each(batch => {
     if (firstBatch) {
@@ -29,6 +30,7 @@ function createStream (options) {
       } catch (e) {
         input.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
         input.emit('error', e)
+        fs.unlink(vrt)
         return input.destroy()
       }
       input.emit('properties', properties)
