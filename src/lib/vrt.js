@@ -30,7 +30,7 @@ function createStream (options) {
       } catch (e) {
         input.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
         input.emit('error', e)
-        fs.unlink(vrt)
+        fs.unlink(vrtPath)
         return input.destroy()
       }
       input.emit('properties', properties)
