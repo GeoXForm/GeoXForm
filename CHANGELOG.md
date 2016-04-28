@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Dont call ogr.abort when ogr does not exist
+
 ## [1.2.3] - 2016-04-27
 ### Changed
 * Don't specify `NLT NONE`
