@@ -15,19 +15,16 @@ function createStream (format, options) {
   const output = _.pipeline(stream => {
     // init VRT stream and attach listeners otherwise the error event will be missed
     const through = _()
-    const vrtStream = VRT.createStream(options)
+
+    stream
+    .pipe(VRT.createStream(options))
     .on('log', l => output.emit('log', l))
     .once('error', e => {
       output.emit('error', e)
       cleanup(output, options.path)
     })
-    .on('error', e => {
-      output.emit('log', {level: 'error', message: e})
-    })
+    .on('error', e => output.emit('log', {level: 'error', message: e}))
     .on('properties', p => Object.assign(options, p))
-
-    stream
-    .pipe(vrtStream)
     .on('finish', () => {
       ogr = OGR.createStream(format, options)
 
@@ -46,7 +43,8 @@ function createStream (format, options) {
   })
 
   output.abort = () => {
-    ogr.abort()
+    // ogr will be undefined if this is called before it starts
+    if (ogr) ogr.abort()
     cleanup(output, options.path)
   }
 
