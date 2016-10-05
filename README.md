@@ -28,11 +28,9 @@ request.get(`http://opendata.arcgis.com/datasets/${id}.geojson`)
 - `(sudo) npm install`
 
 ## Development
-### Install Babel
-- `(sudo) npm install -g babel`
 
 ### Transpile to ES5
-- `npm build`
+- `npm run compile`
 
 ### Test
 - `npm test`

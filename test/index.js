@@ -11,6 +11,19 @@ test('Set up', t => {
   t.end()
 })
 
+test('Convert geojson to GeoRSS', t => {
+  t.plan(1)
+  const geojson = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)
+  const options = {path: `${__dirname}/output`}
+  const rows = []
+  geojson
+  .pipe(GeoXForm.createStream('georss', options))
+  .splitBy('<item>')
+  .compact()
+  .each(row => rows.push(row))
+  .done(() => t.equal(rows.length, 101, 'GeoRSS generated successfully'))
+})
+
 test('Convert geojson to kml', t => {
   t.plan(1)
   const geojson = fs.createReadStream(`${__dirname}/fixtures/fc.geojson`)

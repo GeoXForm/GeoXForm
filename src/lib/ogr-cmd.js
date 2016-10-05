@@ -16,6 +16,7 @@ function create (format, options) {
   options.geometry = options.geometry && options.geometry.toUpperCase() || 'NONE'
   if (format === 'csv') cmd = csvParams(cmd, options)
   if (format === 'zip') cmd = shapefileParams(cmd, options)
+  if (format === 'georss') cmd = georssParams(cmd, options)
   return finishOgrParams(cmd)
 }
 
@@ -37,7 +38,20 @@ function csvParams (cmd, options) {
 }
 
 /**
- * Add parameters specific to a csv export
+ * Add parameters specific to a GeoRSS export
+ *
+ * @param {array} cmd - an array of OGR command parts to modify
+ * @param {object} options - may contain fields
+ * @return {array}
+ * @private
+ */
+function georssParams (cmd, options) {
+  cmd.push('-dsco', 'USE_EXTENSIONS=YES')
+  return cmd
+}
+
+/**
+ * Add parameters specific to a shapefile export
  *
  * @param {string} cmd - an array of OGR command parts to modify
  * @param {object} options - may contain a wkid or srs
@@ -71,7 +85,8 @@ const ogrFormats = {
   csv: 'CSV',
   json: 'GeoJSON',
   geojson: 'GeoJSON',
-  gpkg: 'GPKG'
+  gpkg: 'GPKG',
+  georss: 'GeoRSS'
 }
 
 module.exports = {create}
