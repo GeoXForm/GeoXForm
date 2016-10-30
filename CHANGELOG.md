@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Fixed
+* Property sampling now works again
+
 ## [1.2.4] - 2016-04-28
 ### Fixed
 * Dont call ogr.abort when ogr does not exist

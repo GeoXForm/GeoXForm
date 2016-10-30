@@ -26,7 +26,7 @@ function createStream (options) {
       firstBatch = false
       let properties
       try {
-        properties = sample(batch)
+        properties = takeSample(batch)
       } catch (e) {
         input.emit('log', {level: 'error', message: {error: 'Bad batch of geojson', batch}})
         input.emit('error', e)
@@ -49,13 +49,19 @@ function createStream (options) {
   return input
 }
 
-function sample (batch) {
-  let sample = lodash.find(string => {
-    const feature = JSON.parse(string)
+function takeSample (batch) {
+  let sample = lodash.find(batch, string => {
+    let feature
+    try {
+      feature = JSON.parse(string)
+    } catch (e) {
+      return false
+    }
     if (feature.geometry && feature.geometry.type) return true
     else return false
   })
   sample = JSON.parse(sample || batch[0])
+
   const geometry = sample.geometry ? sample.geometry.type : 'NONE'
   const fields = Object.keys(sample.properties)
   return {geometry, fields}
