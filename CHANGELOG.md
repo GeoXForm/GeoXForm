@@ -2,7 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## [1.3.0] - 2016-10-30
+### Added
+* Support GeoRSS Output
+
 ### Fixed
 * Property sampling now works again
 
@@ -141,7 +144,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * Initial release: API supports creating VRTs, Geojson, shapefile, kml and csv
 
-[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/koopjs/geoxform/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/koopjs/geoxform/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/koopjs/geoxform/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/koopjs/geoxform/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/koopjs/geoxform/compare/v1.2.1...v1.2.2
