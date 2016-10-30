@@ -1,6 +1,18 @@
 const test = require('tape')
 const Cmd = require('../src/lib/ogr-cmd')
 
+test('Create a command for georss', t => {
+  t.plan(1)
+  const options = {
+    name: 'dummy',
+    fields: ['foo', 'bar', 'X', 'y'],
+    geometry: 'Point'
+  }
+
+  const cmd = Cmd.create('georss', options)
+  t.equal(cmd.join(' '), '--config SHAPE_ENCODING UTF-8 -f GeoRSS /vsistdout/ layer.vrt -dsco USE_EXTENSIONS=YES -append -skipfailures -lco ENCODING=UTF-8', 'Correct command')
+})
+
 test('Create a command for a csv when there are x y properties', t => {
   t.plan(1)
   const options = {
